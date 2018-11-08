@@ -1,0 +1,20 @@
+licenses(["notice"])  # Apache 2.0
+
+package(default_visibility = ["//visibility:public"])
+
+proto_library(
+    name = "svalbard_proto",
+    srcs = [
+        "svalbard.proto",
+    ],
+)
+
+java_proto_library(
+    name = "svalbard_java_proto",
+    deps = [":svalbard_proto"],
+)
+
+cc_proto_library(
+    name = "svalbard_cc_proto",
+    deps = [":svalbard_proto"],
+)

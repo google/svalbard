@@ -1,0 +1,16 @@
+.DS_Store
+/bazel-*
+*.swp
+*~
+**/target
+.idea
+*.iml
+*.tulsiconf-user
+tulsi-*
+tulsigen-*
+*.iml
+.gradle
+**/local.properties
+**/build/**
+.externalNativeBuild
+

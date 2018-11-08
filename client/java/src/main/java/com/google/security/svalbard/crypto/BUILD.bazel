@@ -1,0 +1,10 @@
+licenses(["notice"])  # Apache 2.0
+
+package(default_visibility = ["//visibility:public"])
+
+# public interfaces
+
+java_library(
+    name = "crypto",
+    srcs = glob(["*.java"]),
+)

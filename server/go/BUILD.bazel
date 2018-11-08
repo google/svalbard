@@ -1,0 +1,152 @@
+licenses(["notice"])  # Apache 2.0
+
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+go_binary(
+    name = "server",
+    srcs = ["server.go"],
+    visibility = ["//visibility:public"],
+    deps = [
+        ":boltsharestore",
+        ":filechannel",
+        ":svalbardsrv",
+        ":tokenstore",
+    ],
+)
+
+go_library(
+    name = "shareid",
+    srcs = ["shareid.go"],
+    importpath = "github.com/google/svalbard/server/go/shareid",
+)
+
+go_library(
+    name = "svalbardsrv",
+    srcs = ["svalbard_server.go"],
+    importpath = "github.com/google/svalbard/server/go/svalbardsrv",
+    deps = [":shareid"],
+)
+
+go_library(
+    name = "testingtools",
+    testonly = 1,
+    srcs = [
+        "testing_tools.go",
+    ],
+    importpath = "github.com/google/svalbard/server/go/testingtools",
+)
+
+go_library(
+    name = "util",
+    srcs = ["util.go"],
+    importpath = "github.com/google/svalbard/server/go/util",
+)
+
+go_library(
+    name = "tokenstore",
+    srcs = ["token_store.go"],
+    deps = [
+        ":svalbardsrv",
+        ":util",
+    ],
+    importpath = "github.com/google/svalbard/server/go/tokenstore",
+)
+
+go_library(
+    name = "filechannel",
+    srcs = ["file_channel.go"],
+    deps = [":svalbardsrv"],
+    importpath = "github.com/google/svalbard/server/go/filechannel",
+)
+
+go_library(
+    name = "boltsharestore",
+    srcs = ["bolt_share_store.go"],
+    deps = [
+        ":svalbardsrv",
+        "@bbolt_db//:go_default_library",
+    ],
+    importpath = "github.com/google/svalbard/server/go/boltsharestore",
+)
+
+go_library(
+    name = "inmemorysharestore",
+    testonly = 1,
+    srcs = ["inmemory_share_store.go"],
+    deps = [":svalbardsrv"],
+    importpath = "github.com/google/svalbard/server/go/inmemorysharestore",
+)
+
+go_test(
+    name = "shareid_test",
+    size = "small",
+    srcs = ["shareid_test.go"],
+    embed = [":shareid"],
+)
+
+go_test(
+    name = "tokenstore_test",
+    size = "small",
+    srcs = ["token_store_test.go"],
+    embed = [":tokenstore"],
+    deps = [":svalbardsrv"],
+)
+
+go_test(
+    name = "util_test",
+    size = "small",
+    srcs = ["util_test.go"],
+    embed = [":util"],
+)
+
+go_test(
+    name = "filechannel_test",
+    size = "small",
+    srcs = ["file_channel_test.go"],
+    embed = [":filechannel"],
+    deps = [":svalbardsrv"],
+)
+
+go_test(
+    name = "svalbardsrv_test",
+    size = "small",
+    srcs = ["svalbard_server_test.go"],
+    deps = [
+        ":filechannel",
+        ":inmemorysharestore",
+        ":shareid",
+        ":svalbardsrv",
+        ":testingtools",
+        ":tokenstore",
+        ":util",
+    ],
+)
+
+go_test(
+    name = "inmemorysharestore_test",
+    size = "small",
+    srcs = ["inmemory_share_store_test.go"],
+    embed = [":inmemorysharestore"],
+    deps = [":svalbardsrv"],
+)
+
+go_test(
+    name = "boltsharestore_test",
+    size = "small",
+    srcs = ["bolt_share_store_test.go"],
+    embed = [":boltsharestore"],
+    deps = [":svalbardsrv"],
+)
+
+sh_test(
+    name = "server_test",
+    size = "medium",
+    srcs = [
+        "server_test.sh",
+    ],
+    data = [
+        ":server",
+        "@org_python_pypi_portpicker//:portpicker_cli",
+        "//server/testdata:test_server_key",
+    ],
+)

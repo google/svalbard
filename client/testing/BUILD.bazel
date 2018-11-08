@@ -1,0 +1,41 @@
+package(default_visibility = ["//visibility:public"])
+
+licenses(["notice"])  # Apache 2.0
+
+filegroup(
+    name = "test_util",
+    srcs = [
+        "test_truststore.jks",
+        "test_util.sh",
+    ],
+)
+
+sh_test(
+    name = "server_share_manager_test",
+    size = "medium",
+    srcs = [
+        "server_share_manager_test.sh",
+    ],
+    data = [
+        ":test_util",
+        "@org_python_pypi_portpicker//:portpicker_cli",
+        "//client/java:server_share_manager_cli",
+        "//server/go:server",
+        "//server/testdata:test_server_key",
+    ],
+)
+
+sh_test(
+    name = "sharing_test",
+    size = "medium",
+    srcs = [
+        "sharing_test.sh",
+    ],
+    data = [
+        ":test_util",
+        "@org_python_pypi_portpicker//:portpicker_cli",
+        "//client/java:svalbard_client_cli",
+        "//server/go:server",
+        "//server/testdata:test_server_key",
+    ],
+)

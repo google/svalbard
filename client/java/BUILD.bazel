@@ -1,0 +1,92 @@
+package(
+    default_visibility = ["//visibility:public"],
+)
+
+licenses(["notice"])  # Apache 2.0
+
+load("//tools:gen_java_test_rules.bzl", "gen_java_test_rules")
+
+java_library(
+    name = "svalbard",
+    exports = [
+        "//client/java/src/main/java/com/google/security/svalbard/client",
+        "//client/java/src/main/java/com/google/security/svalbard/crypto",
+    ],
+)
+
+# Testing targets.
+
+java_library(
+    name = "testlib",
+    testonly = 1,
+    srcs = glob(["src/test/**/*.java"]),
+    deps = [
+        ":svalbard",
+        "@com_google_guava",
+        "@com_google_protobuf//:protobuf_java",
+        "@com_google_protobuf_javalite//:protobuf_java_lite",
+        "@junit",
+        "//client/proto:svalbard_java_proto",
+    ],
+)
+
+java_library(
+    name = "svalbard_test_util",
+    srcs = [
+        "src/test/java/com/google/security/svalbard/client/FakePrintedShareManager.java",
+        "src/test/java/com/google/security/svalbard/client/FileSecondaryChannel.java",
+    ],
+    deps = [
+        ":svalbard",
+        "//client/proto:svalbard_java_proto",
+        "@com_google_guava",
+    ],
+)
+
+java_binary(
+    name = "server_share_manager_cli",
+    srcs = [
+        "src/test/java/com/google/security/svalbard/client/ServerShareManagerCli.java",
+    ],
+    main_class = "com.google.security.svalbard.client.ServerShareManagerCli",
+    visibility = [
+        "//visibility:public",
+    ],
+    deps = [
+        ":svalbard",
+        ":svalbard_test_util",
+        "//client/proto:svalbard_java_proto",
+        "@com_google_guava",
+        "@com_google_protobuf//:protobuf_java",
+        "@com_google_protobuf_javalite//:protobuf_java_lite",
+    ],
+)
+
+java_binary(
+    name = "svalbard_client_cli",
+    srcs = [
+        "src/test/java/com/google/security/svalbard/client/SvalbardClientCli.java",
+    ],
+    main_class = "com.google.security.svalbard.client.SvalbardClientCli",
+    visibility = [
+        "//visibility:public",
+    ],
+    deps = [
+        ":svalbard",
+        ":svalbard_test_util",
+        "//client/proto:svalbard_java_proto",
+        "@com_google_guava",
+        "@com_google_protobuf//:protobuf_java",
+        "@com_google_protobuf_javalite//:protobuf_java_lite",
+    ],
+)
+
+gen_java_test_rules(
+    default_test_size = "small",
+    test_files = glob(["src/test/**/*Test.java"]),
+    deps = [
+        ":testlib",
+        "@com_google_protobuf//:protobuf_java",
+        "@com_google_protobuf_javalite//:protobuf_java_lite",
+    ],
+)

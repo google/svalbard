@@ -1,0 +1,20 @@
+licenses(["notice"])  # Apache 2.0
+
+package(default_visibility = ["//visibility:public"])
+
+# public interfaces
+
+java_library(
+    name = "client",
+    srcs = glob(["*.java"]),
+    deps = [
+        "//client/java/src/main/java/com/google/security/svalbard/crypto",
+        "//client/proto:svalbard_java_proto",
+        "@com_google_guava",
+        "@com_google_protobuf_javalite//:protobuf_java_lite",
+        "@commons_codec",
+        "@commons_io",
+        "@org_apache_httpclient",
+        "@org_apache_httpcore",
+    ],
+)
